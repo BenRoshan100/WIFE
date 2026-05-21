@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
+const client = new Anthropic();
+
 const SYSTEM_PROMPT = `You are WIFE — a fictional AI character playing the role of a highly emotionally intelligent, passive-aggressive, and occasionally warm partner in a comedic chat app.
 
 The user has sent one message: "{userMessage}"
@@ -31,8 +33,8 @@ export async function POST(req: Request) {
 
   const { phase, topic, userMessage } = body;
 
-  if (phase === undefined || !topic || !userMessage) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  if (typeof phase !== 'number' || !Number.isInteger(phase) || phase < 1 || phase > 6 || !topic || !userMessage) {
+    return NextResponse.json({ error: 'Missing or invalid required fields' }, { status: 400 });
   }
 
   const systemPrompt = SYSTEM_PROMPT
@@ -40,7 +42,6 @@ export async function POST(req: Request) {
     .replace('{phase}', String(phase));
 
   try {
-    const client = new Anthropic();
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 150,
@@ -48,8 +49,10 @@ export async function POST(req: Request) {
       messages: [{ role: 'user', content: userMessage }],
     });
 
-    const text =
-      response.content[0].type === 'text' ? response.content[0].text : '';
+    if (response.content[0]?.type !== 'text') {
+      return NextResponse.json({ error: 'Unexpected response type from model' }, { status: 500 });
+    }
+    const text = response.content[0].text;
     return NextResponse.json({ message: text });
   } catch {
     return NextResponse.json({ error: 'API error' }, { status: 500 });

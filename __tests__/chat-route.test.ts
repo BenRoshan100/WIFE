@@ -3,18 +3,20 @@
  */
 import { POST } from '../app/api/chat/route';
 
+// eslint-disable-next-line no-var
+var mockCreate: jest.Mock;
+
 jest.mock('@anthropic-ai/sdk', () => {
+  mockCreate = jest.fn();
   return {
     __esModule: true,
     default: jest.fn().mockImplementation(() => ({
       messages: {
-        create: jest.fn(),
+        create: mockCreate,
       },
     })),
   };
 });
-
-import Anthropic from '@anthropic-ai/sdk';
 
 function makeRequest(body: object): Request {
   return new Request('http://localhost/api/chat', {
@@ -25,15 +27,9 @@ function makeRequest(body: object): Request {
 }
 
 describe('POST /api/chat', () => {
-  let mockCreate: jest.Mock;
-
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    mockCreate = jest.fn();
-    (Anthropic as jest.MockedClass<typeof Anthropic>).mockImplementation(
-      () => ({ messages: { create: mockCreate } } as unknown as Anthropic)
-    );
   });
 
   it('returns 200 with message on success', async () => {
