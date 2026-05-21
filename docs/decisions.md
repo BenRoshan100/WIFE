@@ -5,7 +5,7 @@
 | Date | Decision | Rationale | Status |
 |------|----------|-----------|--------|
 | 2026-05 | No backend for MVP | Eliminates infra cost, cold starts, API key exposure. All logic client-side. | Active |
-| 2026-05 | Next.js 14 App Router | Single route `/`, SSR not needed but ecosystem familiarity + Vercel deploy | Active |
+| 2026-05 | Next.js 16 App Router | Single route `/`, SSR not needed but ecosystem familiarity + Vercel deploy. Scaffolded as 16 (newer, functionally equivalent for this client-side project). | Active |
 | 2026-05 | Regex classifier (not LLM) | Instant, deterministic, no latency, no API cost. Accuracy sufficient for 8 topic buckets | Active |
 | 2026-05 | Framer Motion for all animation | Typing indicator, message entry stagger, button fade, summary card — all specced | Active |
 | 2026-05 | Tailwind + CSS variables | Design tokens (colors, fonts) via CSS vars; Tailwind for layout/spacing | Active |

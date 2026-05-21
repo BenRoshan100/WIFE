@@ -60,4 +60,16 @@
 - **Trade-off:** Some interface over-engineering relative to pure MVP needs
 - **Status:** Active
 
+### [2026-05-21] — WIFE — Next.js 16 (not 14)
+- **Decision:** Keep Next.js 16.2.6 as scaffolded; docs updated from 14 to 16.
+- **Rationale:** Next 16 is newer and functionally equivalent for this fully client-side app. No breaking changes affect MVP feature set. No reason to downgrade.
+- **Trade-off:** Slight deviation from PRD's "Next.js 14" spec; immaterial for this project.
+- **Status:** Active
+
+### [2026-05-21] — WIFE — Jest test setup
+- **Decision:** Jest 30 + jest-environment-jsdom + @types/jest; config via `jest.config.ts` using `next/jest.js` wrapper; setup file `jest.setup.ts` imports `@testing-library/jest-dom`.
+- **Rationale:** Standard Next.js testing setup. `next/jest.js` wrapper handles module transforms and aliases automatically.
+- **Trade-off:** None material.
+- **Status:** Active
+
 ## [ADD NEW DECISIONS HERE WITH DATE AND PROJECT]

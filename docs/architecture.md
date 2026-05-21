@@ -4,13 +4,13 @@
 Users want a satirical, premium-feel chat app where they send one message and receive an escalating passive-aggressive AI monologue until they apologize. The joke is the product — no utility, pure comedic tension.
 
 ## Architecture overview
-Fully client-side Next.js 14 app. No backend for MVP. The phase engine runs in the browser: classifies the user's message, sequences topic-specific + universal message pools across 6 phases, simulates streaming with delays, and renders a summary card post-apology. Zero API calls in MVP.
+Fully client-side Next.js 16 app. No backend for MVP. The phase engine runs in the browser: classifies the user's message, sequences topic-specific + universal message pools across 6 phases, simulates streaming with delays, and renders a summary card post-apology. Zero API calls in MVP.
 
 ## Component breakdown
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| `app/page.tsx` | Next.js 14 App Router | Entry point — chat UI, no landing page |
+| `app/page.tsx` | Next.js 16 App Router | Entry point — chat UI, no landing page |
 | `components/ChatBubble.tsx` | React + Framer Motion | User and AI message bubbles |
 | `components/TypingIndicator.tsx` | React + CSS animation | Three-dot pulsing indicator |
 | `components/SummaryCard.tsx` | React + Framer Motion | Post-apology frosted glass card |
