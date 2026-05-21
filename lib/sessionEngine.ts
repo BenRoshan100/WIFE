@@ -53,6 +53,7 @@ function pickScripted(
       pool = universalMessages.phase6;
       break;
   }
+  if (!pool.length) throw new Error(`Empty pool: topic=${topic} phase=${phase}`);
   const raw = pool[Math.floor(Math.random() * pool.length)];
   return raw.replace(/\{userMessage\}/g, truncatedMessage);
 }
@@ -62,6 +63,9 @@ export async function getNextMessage(
   index: number,
   useFallback: boolean
 ): Promise<{ message: SessionMessage; error: boolean }> {
+  if (index < 0 || index >= plan.phases.length) {
+    throw new RangeError(`index ${index} out of range for plan with ${plan.phases.length} phases`);
+  }
   const phaseEntry = plan.phases[index];
 
   if (!useFallback) {
@@ -79,16 +83,21 @@ export async function getNextMessage(
       if (!res.ok) throw new Error(`API ${res.status}`);
 
       const data = await res.json();
+      const text = typeof data.message === 'string' && data.message.length > 0
+        ? data.message
+        : null;
+      if (!text) throw new Error('Invalid API response shape');
       return {
         message: {
           id: `msg-${index}`,
-          text: data.message as string,
+          text,
           phase: phaseEntry.phase,
           delayMs: phaseEntry.delayMs,
         },
         error: false,
       };
-    } catch {
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') console.error('[sessionEngine] API error:', err);
       // fall through to scripted fallback
     }
   }
