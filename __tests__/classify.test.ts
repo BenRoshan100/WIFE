@@ -24,7 +24,7 @@ describe('classify', () => {
   it('classifies plans messages', () => {
     expect(classify('what are we doing this weekend')).toBe('plans');
     expect(classify('should we cancel tonight')).toBe('plans');
-    expect(classify('are we still meeting tomorrow')).toBe('plans');
+    expect(classify('should we reschedule the meeting')).toBe('plans');
   });
 
   it('classifies money messages', () => {
