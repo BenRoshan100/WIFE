@@ -36,6 +36,7 @@ export default function Home() {
   const topicRef = useRef<MessageTopic>('generic');
   const sessionMessagesRef = useRef<SessionMessage[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const sessionIdRef = useRef(0);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,6 +44,8 @@ export default function Home() {
 
   const handleSend = async () => {
     if (!input.trim() || appState !== 'idle') return;
+
+    const mySession = ++sessionIdRef.current;
 
     const userMessage = input.trim();
     setInput('');
@@ -60,8 +63,10 @@ export default function Home() {
     for (let i = 0; i < plan.phases.length; i++) {
       setShowTyping(true);
       await sleep(plan.phases[i].delayMs);
+      if (sessionIdRef.current !== mySession) return;
 
       const { message, error } = await getNextMessage(plan, i, useFallback);
+      if (sessionIdRef.current !== mySession) return;
       if (error && !useFallback) useFallback = true;
 
       collected.push(message);
@@ -80,6 +85,7 @@ export default function Home() {
   };
 
   const handleSorry = () => {
+    if (appState !== 'done') return;
     const response = pickRandom(apologyResponses);
     setDisplayMessages((prev) => [
       ...prev,
@@ -91,6 +97,7 @@ export default function Home() {
   };
 
   const handleStartOver = () => {
+    sessionIdRef.current++;
     setInput('');
     setAppState('idle');
     setDisplayMessages([]);
@@ -129,15 +136,18 @@ export default function Home() {
           ))}
         </AnimatePresence>
 
-        {showTyping && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-          >
-            <TypingIndicator />
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {showTyping && (
+            <motion.div
+              key="typing-indicator"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+            >
+              <TypingIndicator />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div ref={bottomRef} />
       </div>
