@@ -159,7 +159,7 @@ export const topicMessages: Record<
   },
 };
 
-export const universalMessages = {
+export const universalMessages: Record<'phase4' | 'phase5' | 'phase6', string[]> = {
   phase4: [
     "Actually, I know you're trying. I see it. ❤️",
     "You're not a bad person. You're just a *specific* kind of person.",
@@ -193,7 +193,13 @@ export const apologyResponses = [
   'I know.',
 ];
 
-export const summaryData = {
+interface SummaryDataPool {
+  damageCaused: string[];
+  coreIssue: Record<MessageTopic, string>;
+  relationshipStatus: string[];
+}
+
+export const summaryData: SummaryDataPool = {
   damageCaused: [
     'Medium-high. Recoverable.',
     'Significant. Noted in the record.',
@@ -209,7 +215,7 @@ export const summaryData = {
     phone: 'Deliberate communication avoidance.',
     vague: 'Communication avoidance via minimalism.',
     generic: 'Pattern of casual disregard.',
-  } as Record<MessageTopic, string>,
+  },
   relationshipStatus: [
     'Stable (monitored)',
     'Conditional peace',
