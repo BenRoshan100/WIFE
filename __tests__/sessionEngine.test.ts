@@ -28,7 +28,7 @@ describe('initSession', () => {
   it('phases appear in ascending order', () => {
     const plan = initSession('food', 'test');
     const nums = plan.phases.map((p) => p.phase);
-    const firstOf = (n: number) => nums.indexOf(n);
+    const firstOf = (n: number) => nums.indexOf(n as 1 | 2 | 3 | 4 | 5 | 6);
     expect(firstOf(1)).toBeLessThan(firstOf(2));
     expect(firstOf(2)).toBeLessThan(firstOf(3));
     expect(firstOf(3)).toBeLessThan(firstOf(4));
