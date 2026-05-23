@@ -17,11 +17,10 @@ export function initSession(topic: MessageTopic, userMessage: string): SessionPl
     }
   };
 
-  addPhase(1, randInt(2, 3));
-  addPhase(2, randInt(3, 4));
-  addPhase(3, randInt(3, 4));
-  addPhase(4, randInt(1, 2));
-  addPhase(5, randInt(2, 3));
+  addPhase(1, 1);
+  addPhase(2, 1);
+  addPhase(3, 1);
+  addPhase(4, 1);
   addPhase(6, 1);
 
   return { phases, topic, truncatedMessage };
@@ -74,7 +73,7 @@ export async function getNextMessage(
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phase: phaseEntry.phase,
+          messageNumber: index + 1,
           topic: plan.topic,
           userMessage: plan.truncatedMessage,
         }),

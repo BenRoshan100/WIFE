@@ -37,7 +37,7 @@ describe('POST /api/chat', () => {
       content: [{ type: 'text', text: 'LLM generated message' }],
     });
 
-    const req = makeRequest({ phase: 1, topic: 'food', userMessage: 'dinner' });
+    const req = makeRequest({ messageNumber: 1, topic: 'food', userMessage: 'dinner' });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -45,20 +45,20 @@ describe('POST /api/chat', () => {
     expect(json.message).toBe('LLM generated message');
   });
 
-  it('returns 400 when phase is missing', async () => {
+  it('returns 400 when messageNumber is missing', async () => {
     const req = makeRequest({ topic: 'food', userMessage: 'dinner' });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
 
   it('returns 400 when topic is missing', async () => {
-    const req = makeRequest({ phase: 1, userMessage: 'dinner' });
+    const req = makeRequest({ messageNumber: 1, userMessage: 'dinner' });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
 
   it('returns 400 when userMessage is missing', async () => {
-    const req = makeRequest({ phase: 1, topic: 'food' });
+    const req = makeRequest({ messageNumber: 1, topic: 'food' });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
@@ -66,17 +66,17 @@ describe('POST /api/chat', () => {
   it('returns 500 when Anthropic SDK throws', async () => {
     mockCreate.mockRejectedValue(new Error('API failure'));
 
-    const req = makeRequest({ phase: 1, topic: 'food', userMessage: 'dinner' });
+    const req = makeRequest({ messageNumber: 1, topic: 'food', userMessage: 'dinner' });
     const res = await POST(req);
     expect(res.status).toBe(500);
   });
 
-  it('injects userMessage and phase into system prompt', async () => {
+  it('injects userMessage and messageNumber into system prompt', async () => {
     mockCreate.mockResolvedValue({
       content: [{ type: 'text', text: 'response' }],
     });
 
-    const req = makeRequest({ phase: 3, topic: 'food', userMessage: 'dinner tonight' });
+    const req = makeRequest({ messageNumber: 3, topic: 'food', userMessage: 'dinner tonight' });
     await POST(req);
 
     const callArgs = mockCreate.mock.calls[0][0];
@@ -89,7 +89,7 @@ describe('POST /api/chat', () => {
       content: [{ type: 'text', text: 'response' }],
     });
 
-    const req = makeRequest({ phase: 1, topic: 'food', userMessage: 'dinner' });
+    const req = makeRequest({ messageNumber: 1, topic: 'food', userMessage: 'dinner' });
     await POST(req);
 
     const callArgs = mockCreate.mock.calls[0][0];

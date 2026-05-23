@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import ChatBubble from '@/components/ChatBubble';
 import TypingIndicator from '@/components/TypingIndicator';
-import SorryButton from '@/components/SorryButton';
 import SummaryCard from '@/components/SummaryCard';
 import { classify } from '@/lib/classify';
 import { initSession, getNextMessage } from '@/lib/sessionEngine';
@@ -111,22 +110,23 @@ export default function Home() {
     navigator.clipboard.writeText(text).catch(() => {});
   };
 
+  const isIdle = appState === 'idle';
+
   return (
-    <main
+    <motion.main
       className="min-h-screen flex flex-col max-w-lg mx-auto"
-      style={{ background: 'var(--bg)' }}
+      animate={{ backgroundColor: isIdle ? '#FFFFFF' : '#0D0D0D' }}
+      transition={{ duration: 0.7, ease: 'easeInOut' }}
     >
       <header className="px-6 py-5 flex-shrink-0">
-        <h1
+        <motion.h1
           className="text-lg uppercase"
-          style={{
-            fontFamily: 'var(--font-display)',
-            color: '#E8E8E8',
-            letterSpacing: '0.35em',
-          }}
+          animate={{ color: isIdle ? '#0D0D0D' : '#E8E8E8' }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+          style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.35em' }}
         >
           WIFE
-        </h1>
+        </motion.h1>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
@@ -153,12 +153,6 @@ export default function Home() {
       </div>
 
       <div className="flex-shrink-0 px-4 pb-8 pt-2 space-y-4">
-        {appState === 'done' && (
-          <div className="flex justify-center">
-            <SorryButton onClick={handleSorry} />
-          </div>
-        )}
-
         {appState === 'resolved' && summary && (
           <SummaryCard
             summary={summary}
@@ -167,47 +161,79 @@ export default function Home() {
           />
         )}
 
-        {appState === 'idle' && (
+        {appState === 'idle' && !input.trim() && (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {[
+              "I'll be late to home from work",
+              "What's for dinner?",
+              "Can we go out for a movie tonight?",
+              "I forgot to call you back",
+              "I'm too tired to talk right now",
+            ].map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => setInput(suggestion)}
+                className="px-3 py-1.5 rounded-full text-xs transition-opacity hover:opacity-70"
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(0,0,0,0.15)',
+                  color: 'rgba(0,0,0,0.5)',
+                }}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {appState !== 'resolved' && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSend();
+              if (appState === 'idle') handleSend();
+              else if (appState === 'done') handleSorry();
             }}
             className="flex gap-2"
           >
             <input
               autoFocus
               type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Say something..."
+              value={appState === 'idle' ? input : ''}
+              onChange={(e) => appState === 'idle' && setInput(e.target.value)}
+              placeholder={
+                appState === 'idle'
+                  ? 'Say something...'
+                  : appState === 'streaming'
+                  ? 'WIFE is talking...'
+                  : 'Say sorry to unlock...'
+              }
+              readOnly={appState !== 'idle'}
               className="flex-1 px-4 py-3 rounded-full text-sm outline-none"
               style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border-subtle)',
-                color: '#E8E8E8',
+                background:
+                  appState === 'idle'
+                    ? 'rgba(0,0,0,0.05)'
+                    : 'rgba(255,255,255,0.05)',
+                border:
+                  appState === 'idle'
+                    ? '1px solid rgba(0,0,0,0.15)'
+                    : '1px solid rgba(255,255,255,0.08)',
+                color: appState === 'idle' ? '#0D0D0D' : 'rgba(255,255,255,0.25)',
+                cursor: appState !== 'idle' ? 'not-allowed' : 'text',
               }}
             />
             <button
               type="submit"
-              disabled={!input.trim()}
+              disabled={appState === 'streaming' || (appState === 'idle' && !input.trim())}
               className="px-5 py-3 rounded-full text-sm font-medium disabled:opacity-30 transition-opacity"
-              style={{ background: 'var(--accent)', color: '#0D0D0D' }}
+              style={{ background: 'var(--accent)', color: '#0D0D0D', whiteSpace: 'nowrap' }}
             >
-              Send
+              {appState === 'done' ? "I'm sorry" : 'Send'}
             </button>
           </form>
         )}
-
-        {appState === 'streaming' && (
-          <p
-            className="text-center text-xs"
-            style={{ color: 'rgba(255,255,255,0.22)' }}
-          >
-            Listening mode active...
-          </p>
-        )}
       </div>
-    </main>
+    </motion.main>
   );
 }

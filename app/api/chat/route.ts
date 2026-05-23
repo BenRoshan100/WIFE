@@ -23,10 +23,10 @@ Strict rotation rule — each message must draw from a DIFFERENT category. Cycle
 You are on message number {phase}. Pick the category that fits phase {phase} in the rotation above.
 
 Tone: premium sitcom — specific, dry, witty. Occasionally drop in "na", "arre", "no?", "only" where natural. Never meme-y, never cruel.
-Keep each message to 1-3 sentences. Output one message only. No preamble.`;
+Keep each message to 1-2 short sentences MAXIMUM. Output one message only. No preamble. No long explanations.`;
 
 export async function POST(req: Request) {
-  let body: { phase?: number; topic?: string; userMessage?: string };
+  let body: { messageNumber?: number; topic?: string; userMessage?: string };
 
   try {
     body = await req.json();
@@ -34,20 +34,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { phase, topic, userMessage } = body;
+  const { messageNumber, topic, userMessage } = body;
 
-  if (typeof phase !== 'number' || !Number.isInteger(phase) || phase < 1 || phase > 6 || !topic || !userMessage) {
+  if (typeof messageNumber !== 'number' || !Number.isInteger(messageNumber) || messageNumber < 1 || messageNumber > 5 || !topic || !userMessage) {
     return NextResponse.json({ error: 'Missing or invalid required fields' }, { status: 400 });
   }
 
   const systemPrompt = SYSTEM_PROMPT
     .replace('{userMessage}', userMessage)
-    .replace('{phase}', String(phase));
+    .replace(/\{phase\}/g, String(messageNumber));
 
   try {
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 150,
+      max_tokens: 60,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     });

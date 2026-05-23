@@ -1,10 +1,9 @@
 import { initSession, getNextMessage } from '../lib/sessionEngine';
 
 describe('initSession', () => {
-  it('returns between 12 and 17 phase entries', () => {
+  it('returns exactly 10 phase entries', () => {
     const plan = initSession('food', 'test message');
-    expect(plan.phases.length).toBeGreaterThanOrEqual(12);
-    expect(plan.phases.length).toBeLessThanOrEqual(17);
+    expect(plan.phases.length).toBe(10);
   });
 
   it('truncates userMessage longer than 40 chars', () => {
