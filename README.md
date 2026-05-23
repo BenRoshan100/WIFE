@@ -1,39 +1,29 @@
-# [Project Name]
+# WIFE
 
-> [One sentence: what it does and why it matters]
+You sent one message. She has thoughts.
 
-![demo](docs/demo.gif)
+A lot of them.
 
-## Problem
-[2-3 sentences: what problem this solves, who has this problem]
+---
 
-## Architecture
-[Description or diagram of how the system works]
+## What is this
 
-## Results
+You type something. WIFE responds. You cannot reply. You can only apologise.
 
-| Metric | Baseline | This model |
-|--------|----------|-----------|
-| [metric] | [value] | [value] |
+That's the app.
 
-## Tech stack
-- **ML:** [libraries]
-- **API:** FastAPI
-- **Frontend:** Streamlit
-- **Deploy:** Railway
+## Tech
+
+Next.js · Claude Haiku · Framer Motion · Tailwind · Vercel
 
 ## Run locally
+
 ```bash
-git clone [repo-url]
-cd [project]
-pip install -r requirements.txt
-cp .env.example .env  # add your API keys
-uvicorn main:app --reload
+npm install
+echo "ANTHROPIC_API_KEY=your_key" > .env.local
+npm run dev
 ```
 
-## Case study
-[Link to blog post on museeduben.art.blog]
+## Disclaimer
 
-## Portfolio context
-This project is part of my Data Science / Applied AI portfolio targeting international MNC roles.
-Built to demonstrate: [specific skill 1], [specific skill 2], [specific skill 3].
+A parody app by Ben. No offence to the wives of the world.
