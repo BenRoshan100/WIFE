@@ -118,40 +118,70 @@ export default function Home() {
       animate={{ backgroundColor: isIdle ? '#FFFFFF' : '#0D0D0D' }}
       transition={{ duration: 0.7, ease: 'easeInOut' }}
     >
-      <header className="px-6 py-5 flex-shrink-0">
-        <motion.h1
-          className="text-lg uppercase"
-          animate={{ color: isIdle ? '#0D0D0D' : '#E8E8E8' }}
-          transition={{ duration: 0.7, ease: 'easeInOut' }}
-          style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.35em' }}
-        >
-          WIFE
-        </motion.h1>
-      </header>
+      {/* Header — only in flow when not idle */}
+      {!isIdle && (
+        <header className="px-6 py-5 flex-shrink-0">
+          <motion.h1
+            layoutId="wife-logo"
+            className="uppercase"
+            style={{
+              fontFamily: 'var(--font-display)',
+              letterSpacing: '0.35em',
+              fontSize: '1.125rem',
+              color: '#E8E8E8',
+            }}
+          >
+            WIFE
+          </motion.h1>
+        </header>
+      )}
 
-      <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
-        <AnimatePresence initial={false}>
-          {displayMessages.map((msg) => (
-            <ChatBubble key={msg.id} text={msg.text} isUser={msg.isUser} />
-          ))}
-        </AnimatePresence>
+      {/* Center logo — only when idle */}
+      {isIdle && (
+        <div className="flex-1 flex items-center justify-center">
+          <motion.h1
+            layoutId="wife-logo"
+            className="uppercase"
+            style={{
+              fontFamily: 'var(--font-display)',
+              letterSpacing: '0.35em',
+              fontSize: '3rem',
+              fontWeight: 400,
+              color: '#0D0D0D',
+            }}
+          >
+            WIFE
+          </motion.h1>
+        </div>
+      )}
 
-        <AnimatePresence>
-          {showTyping && (
-            <motion.div
-              key="typing-indicator"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-            >
-              <TypingIndicator />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Messages — only when not idle */}
+      {!isIdle && (
+        <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
+          <AnimatePresence initial={false}>
+            {displayMessages.map((msg) => (
+              <ChatBubble key={msg.id} text={msg.text} isUser={msg.isUser} />
+            ))}
+          </AnimatePresence>
 
-        <div ref={bottomRef} />
-      </div>
+          <AnimatePresence>
+            {showTyping && (
+              <motion.div
+                key="typing-indicator"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+              >
+                <TypingIndicator />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
+          <div ref={bottomRef} />
+        </div>
+      )}
+
+      {/* Bottom area */}
       <div className="flex-shrink-0 px-4 pb-8 pt-2 space-y-4">
         {appState === 'resolved' && summary && (
           <SummaryCard
@@ -161,7 +191,7 @@ export default function Home() {
           />
         )}
 
-        {appState === 'idle' && !input.trim() && (
+        {isIdle && !input.trim() && (
           <div className="flex flex-wrap gap-2 justify-center">
             {[
               "I'll be late to home from work",
@@ -199,33 +229,27 @@ export default function Home() {
             <input
               autoFocus
               type="text"
-              value={appState === 'idle' ? input : ''}
-              onChange={(e) => appState === 'idle' && setInput(e.target.value)}
+              value={isIdle ? input : ''}
+              onChange={(e) => isIdle && setInput(e.target.value)}
               placeholder={
-                appState === 'idle'
+                isIdle
                   ? 'Say something...'
                   : appState === 'streaming'
                   ? 'WIFE is talking...'
                   : 'Say sorry to unlock...'
               }
-              readOnly={appState !== 'idle'}
+              readOnly={!isIdle}
               className="flex-1 px-4 py-3 rounded-full text-sm outline-none"
               style={{
-                background:
-                  appState === 'idle'
-                    ? 'rgba(0,0,0,0.05)'
-                    : 'rgba(255,255,255,0.05)',
-                border:
-                  appState === 'idle'
-                    ? '1px solid rgba(0,0,0,0.15)'
-                    : '1px solid rgba(255,255,255,0.08)',
-                color: appState === 'idle' ? '#0D0D0D' : 'rgba(255,255,255,0.25)',
-                cursor: appState !== 'idle' ? 'not-allowed' : 'text',
+                background: isIdle ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)',
+                border: isIdle ? '1px solid rgba(0,0,0,0.15)' : '1px solid rgba(255,255,255,0.08)',
+                color: isIdle ? '#0D0D0D' : 'rgba(255,255,255,0.25)',
+                cursor: !isIdle ? 'not-allowed' : 'text',
               }}
             />
             <button
               type="submit"
-              disabled={appState === 'streaming' || (appState === 'idle' && !input.trim())}
+              disabled={appState === 'streaming' || (isIdle && !input.trim())}
               className="px-5 py-3 rounded-full text-sm font-medium disabled:opacity-30 transition-opacity"
               style={{ background: 'var(--accent)', color: '#0D0D0D', whiteSpace: 'nowrap' }}
             >
